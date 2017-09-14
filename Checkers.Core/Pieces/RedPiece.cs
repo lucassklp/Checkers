@@ -27,5 +27,10 @@ namespace Checkers.Core.Pieces
         {
             throw new NotImplementedException();
         }
+
+        public override KingPiece ToKing()
+        {
+            return new KingPiece(this);
+        }
     }
 }

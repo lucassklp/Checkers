@@ -24,5 +24,7 @@ namespace Checkers.Core.Pieces
         public abstract void Move(Moviment moviment);
 
         public abstract bool IsMovimentValid(Moviment moviment);
+
+        public abstract KingPiece ToKing();
     }
 }

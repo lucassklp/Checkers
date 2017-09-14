@@ -46,9 +46,12 @@
     <Compile Include="Game.cs" />
     <Compile Include="Moviment.cs" />
     <Compile Include="Pieces\BlackPiece.cs" />
+    <Compile Include="Pieces\KingPiece.cs" />
     <Compile Include="Pieces\Piece.cs" />
     <Compile Include="Pieces\RedPiece.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="Players\BlackPlayer.cs" />
+    <Compile Include="Players\Player.cs" />
+    <Compile Include="Players\RedPlayer.cs" />
     <Compile Include="Prediction.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

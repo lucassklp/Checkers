@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core.Pieces
 {
-    public class BlackPiece : Piece
+    public class KingPiece : Piece
     {
-        public BlackPiece(int x, int y) : base(x, y)
+        public KingPiece(Piece p) : base(p.X, p.Y)
         {
 
         }
@@ -30,7 +30,7 @@ namespace Checkers.Core.Pieces
 
         public override KingPiece ToKing()
         {
-            return new KingPiece(this);
+            return this;
         }
     }
 }

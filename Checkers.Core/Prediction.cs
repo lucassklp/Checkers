@@ -9,7 +9,7 @@ namespace Checkers.Core
 {
     public class Prediction
     {
-        public Point LeftPrediction { get; private set; }
-        public Point RightPrediction { get; private set; }
+        public List<Point> LeftPrediction { get; private set; }
+        public List<Point> RightPrediction { get; private set; }
     }
 }
