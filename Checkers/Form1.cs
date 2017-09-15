@@ -24,8 +24,6 @@ namespace Checkers
         private Player player;
         private Piece PeekedPiece { get; set; }
 
-        private bool ActiveTurn { get; set; }
-
         private TcpSocket socket;
 
         private Timer TableUpdater;
@@ -56,21 +54,40 @@ namespace Checkers
 
         private void Socket_OnReceiveSocket(object sender, byte[] data)
         {
-            //if(this.Game == null)
-            //{
-            //    this.player = new RedPlayer();
-            //}
+            if (this.Game == null)
+            {
+                this.player = new RedPlayer();
+                this.socket.Connect("127.0.0.1", 41000);
+            }
+
             this.Game = Serializer.Deserialize<Game>(data);
-            this.ActiveTurn = true;
+            if (this.CheckPlayerTurn())
+            {
+                this.player = this.Game.CurrentPlayer;
+            }
+        }
+
+
+        private void LockTable()
+        {
 
         }
+
+        private bool CheckPlayerTurn()
+        {
+            if (this.Game != null && this.player != null)
+                return (this.Game.CurrentPlayer is BlackPlayer && this.player is BlackPlayer ||
+                        this.Game.CurrentPlayer is RedPlayer && this.player is RedPlayer);
+            else return false;
+        }
+
 
         private void InitializeGame(object sender, EventArgs e)
         {
             this.Game = new Game();
             this.Game.PositionatePieces();
-            //this.player = new BlackPlayer();
-            this.socket.Connect("127.0.0.1", 40000);
+            this.player = new BlackPlayer();
+            this.socket.Connect("127.0.0.1", 41000);
             this.Game.RafflePlayer();
             this.socket.Send(Serializer.Serialize(this.Game));
         }
@@ -85,13 +102,15 @@ namespace Checkers
                 {
                     if ((startWhite + j) % 2 == 0)
                     {
-                        var button = new Button();
-                        button.Size = new System.Drawing.Size(50, 50);
-                        button.Top = i * 50;
-                        button.Left = j * 50;
-                        button.Name = string.Format("{0}x{1}", i, j);
-                        button.BackColor = System.Drawing.Color.Black;
-                        button.ForeColor = System.Drawing.Color.White;
+                        var button = new Button
+                        {
+                            Size = new System.Drawing.Size(50, 50),
+                            Top = i * 50,
+                            Left = j * 50,
+                            Name = string.Format("{0}x{1}", i, j),
+                            BackColor = System.Drawing.Color.Black,
+                            ForeColor = System.Drawing.Color.White
+                        };
                         button.Click += Button_Click;
                         this.Field.Add(button);
                         this.Controls.Add(button);
@@ -103,24 +122,25 @@ namespace Checkers
 
         private void Button_Click(object sender, EventArgs e)
         {
-            this.ActiveTurn = false;
-            var coordinate = this.GetButtonCoordinate((Button)sender);
-            if (this.PeekedPiece == null)
+            if (this.CheckPlayerTurn())
             {
-                this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
-            }
-            else
-            {
-                var moviment = new Moviment(coordinate);
-                if (this.PeekedPiece.IsMovimentValid(moviment))
+                var coordinate = this.GetButtonCoordinate((Button)sender);
+                if (this.PeekedPiece == null)
                 {
-                    this.PeekedPiece.Move(moviment);
+                    this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
                 }
-                this.PeekedPiece = null;
-                this.socket.Send(Serializer.Serialize(this.Game));
+                else
+                {
+                    var moviment = new Moviment(coordinate);
+                    if (this.PeekedPiece.IsMovimentValid(moviment))
+                    {
+                        this.PeekedPiece.Move(moviment);
+                    }
+                    this.PeekedPiece = null;
+                    this.Game.SwapPlayers();
+                    this.socket.Send(Serializer.Serialize(this.Game));
+                }
             }
-
-
         }
 
 
@@ -132,7 +152,7 @@ namespace Checkers
 
         private void UpdateTable()
         {
-
+            //Limpa o tabuleiro
             foreach (var item in this.Field)
             {
                 item.Text = "";
@@ -142,7 +162,7 @@ namespace Checkers
             {
                 foreach (var piece in this.Game.Board.BlackPieces)
                 {
-                    var btn = this.Field.Find(x => 
+                    var btn = this.Field.Find(x =>
                         this.GetButtonCoordinate(x).X == piece.X &&
                         this.GetButtonCoordinate(x).Y == piece.Y
                     );
