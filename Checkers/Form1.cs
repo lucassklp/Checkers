@@ -1,5 +1,7 @@
 ﻿using Checkers.Core;
-using Checkers.Core.Enums;
+using Checkers.Core.Pieces;
+using Checkers.Core.Players;
+using Checkers.Socket;
 using Checkers.Socket.TCP;
 using System;
 using System.Collections.Generic;
@@ -16,44 +18,61 @@ namespace Checkers
     public partial class Form1 : Form
     {
 
-        private Button[,] Field;
+        private List<Button> Field;
 
-        private Board Board;
+        private Game Game = null;
+        private Player player;
+        private Piece PeekedPiece { get; set; }
 
-        private Core.Enums.Color currentPlayer;
+        private bool ActiveTurn { get; set; }
 
         private TcpSocket socket;
+
+        private Timer TableUpdater;
 
         public Form1()
         {
             InitializeComponent();
 
-            this.Field = new Button[8, 8];
-            this.Board = new Board();
+            this.Field = new List<Button>();
 
             this.InitializateField();
             this.UpdateTable();
-            this.InitializeGame();
-
 
             this.socket = new TcpSocket("127.0.0.1", 40000);
             socket.OnReceiveSocket += Socket_OnReceiveSocket;
             socket.StartServer();
 
-            
+            this.TableUpdater = new Timer();
+            TableUpdater.Tick += TableUpdater_Tick;
+            TableUpdater.Interval = 50;
+            TableUpdater.Start();
+        }
+
+        private void TableUpdater_Tick(object sender, EventArgs e)
+        {
+            this.UpdateTable();
         }
 
         private void Socket_OnReceiveSocket(object sender, byte[] data)
         {
-            MessageBox.Show("Socket chegou");
+            //if(this.Game == null)
+            //{
+            //    this.player = new RedPlayer();
+            //}
+            this.Game = Serializer.Deserialize<Game>(data);
+            this.ActiveTurn = true;
+
         }
 
-        private void InitializeGame()
+        private void InitializeGame(object sender, EventArgs e)
         {
-            Random r = new Random((int)DateTime.Now.Ticks);
-            var random = r.Next(2);
-            this.currentPlayer = (Checkers.Core.Enums.Color)random;
-            MessageBox.Show(string.Format("O jogador de cor '{0}' inicia", currentPlayer.ToString()));
+            this.Game = new Game();
+            this.Game.PositionatePieces();
+            //this.player = new BlackPlayer();
+            this.socket.Connect("127.0.0.1", 40000);
+            this.Game.RafflePlayer();
+            this.socket.Send(Serializer.Serialize(this.Game));
         }
 
         private void InitializateField()
@@ -74,7 +93,7 @@ namespace Checkers
                         button.BackColor = System.Drawing.Color.Black;
                         button.ForeColor = System.Drawing.Color.White;
                         button.Click += Button_Click;
-                        this.Field[i, j] = button;
+                        this.Field.Add(button);
                         this.Controls.Add(button);
                     }
                 }
@@ -84,10 +103,23 @@ namespace Checkers
 
         private void Button_Click(object sender, EventArgs e)
         {
-            if(!socket.IsConnected)
-                socket.Connect("127.0.0.1", 41000);
+            this.ActiveTurn = false;
+            var coordinate = this.GetButtonCoordinate((Button)sender);
+            if (this.PeekedPiece == null)
+            {
+                this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+            }
+            else
+            {
+                var moviment = new Moviment(coordinate);
+                if (this.PeekedPiece.IsMovimentValid(moviment))
+                {
+                    this.PeekedPiece.Move(moviment);
+                }
+                this.PeekedPiece = null;
+                this.socket.Send(Serializer.Serialize(this.Game));
+            }
 
-            this.socket.Send(Encoding.UTF8.GetBytes("Olá mundo"));
 
         }
 
@@ -100,15 +132,32 @@ namespace Checkers
 
         private void UpdateTable()
         {
-            foreach (var piece in this.Board.Pieces) 
+
+            foreach (var item in this.Field)
             {
-                var button = this.Field[piece.X, piece.Y];
-                button.Text = piece.Color.ToString();
-                //button.Enabled = (currentPlayer == piece.Color);
+                item.Text = "";
+            }
+
+            if (this.Game != null)
+            {
+                foreach (var piece in this.Game.Board.BlackPieces)
+                {
+                    var btn = this.Field.Find(x => 
+                        this.GetButtonCoordinate(x).X == piece.X &&
+                        this.GetButtonCoordinate(x).Y == piece.Y
+                    );
+                    btn.Text = "Black";
+                }
+
+                foreach (var piece in this.Game.Board.RedPieces)
+                {
+                    var btn = this.Field.Find(x =>
+                        this.GetButtonCoordinate(x).X == piece.X &&
+                        this.GetButtonCoordinate(x).Y == piece.Y
+                    );
+                    btn.Text = "Red";
+                }
             }
         }
-
-
-
     }
 }

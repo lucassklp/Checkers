@@ -1,5 +1,4 @@
-﻿using Checkers.Core.Enums;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core.Pieces
 {
+    [Serializable]
     public abstract class Piece
     {
-        public int X { get; private set; }
-        public int Y { get; private set; }
-        public bool IsKing { get; private set; } = false;
+        public int X { get; protected set; }
+        public int Y { get; protected set; }
 
         public Piece(int X, int Y)
         {
@@ -19,7 +18,7 @@ namespace Checkers.Core.Pieces
             this.Y = Y;
         }
 
-        public abstract Prediction Predict(Board board);
+        public abstract Prediction Predict(Game board);
 
         public abstract void Move(Moviment moviment);
 

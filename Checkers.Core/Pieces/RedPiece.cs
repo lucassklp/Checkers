@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core.Pieces
 {
+    [Serializable]
     class RedPiece : Piece
     {
         public RedPiece(int x, int y) : base(x, y)
@@ -15,15 +16,16 @@ namespace Checkers.Core.Pieces
 
         public override bool IsMovimentValid(Moviment moviment)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public override void Move(Moviment moviment)
         {
-            throw new NotImplementedException();
+            this.X = moviment.Destination.X;
+            this.Y = moviment.Destination.Y;
         }
 
-        public override Prediction Predict(Board board)
+        public override Prediction Predict(Game board)
         {
             throw new NotImplementedException();
         }

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core.Players
 {
+    [Serializable]
     public class RedPlayer : Player
     {
         public override void PreparePieces()

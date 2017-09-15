@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Checkers.Socket
 {
-    class Serializer
+    public static class Serializer
     {
         public static byte[] Serialize<T>(T data) where T : class
         {

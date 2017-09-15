@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core
 {
+    [Serializable]
     public class Prediction
     {
         public List<Point> LeftPrediction { get; private set; }

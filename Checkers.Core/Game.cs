@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 
 namespace Checkers.Core
 {
-    class Game
+    [Serializable]
+    public class Game
     {
         public Player BlackPlayer { get; set; }
         public Player RedPlayer { get; set; }
 
-        private Player CurrentPlayer { get; set; }
+        public Player CurrentPlayer { get; set; }
         public Board Board { get; set; }
 
         public Game()
@@ -35,6 +36,11 @@ namespace Checkers.Core
         {
             Random r = new Random();
             this.CurrentPlayer = (r.Next(2) % 2 == 0 ? this.RedPlayer : this.BlackPlayer); 
+        }
+
+        public void SwapPlayers()
+        {
+            this.CurrentPlayer = (this.CurrentPlayer == this.RedPlayer ? this.BlackPlayer : this.RedPlayer);
         }
 
     }

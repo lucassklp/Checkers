@@ -12,7 +12,7 @@ namespace Checkers.Socket.TCP
         private TcpListener server;
         public event OnReceiveSocket Changed;
 
-        private static int BUFFER_SIZE = 1024;
+        private static int BUFFER_SIZE = 1024 * 60;
 
         public SocketDataReceiver(TcpListener server, OnReceiveSocket Changed)
         {

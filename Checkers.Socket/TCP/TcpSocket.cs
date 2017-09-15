@@ -15,7 +15,7 @@ namespace Checkers.Socket.TCP
     {
         private TcpClient client;
         private TcpListener server;
-
+        private Thread thread = null;
         private string ip;
         private int port;
 
@@ -41,7 +41,8 @@ namespace Checkers.Socket.TCP
         {
             Console.WriteLine("Server iniciado. Host: {0}, Port: {1}", this.ip, this.port);
             SocketDataReceiver dataReceiver = new SocketDataReceiver(this.server, this.OnReceiveSocket);
-            Thread thread = new Thread(dataReceiver.Start);
+            this.thread = new Thread(dataReceiver.Start);
+            this.thread.IsBackground = true;
             thread.Start();
         }
 
