@@ -16,7 +16,7 @@ namespace Checkers.Core.Players
             {
                 for (int column = row % 2; column < 8; column += 2)
                 {
-                    this.Pieces.Add(new BlackPiece(row, column));
+                    this.Pieces.Add(new WhitePiece(row, column));
                 }
             }
         }

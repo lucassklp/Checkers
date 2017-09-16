@@ -19,5 +19,15 @@ namespace Checkers.Core.Players
 
         public abstract void PreparePieces();
 
+        public bool Owns(Piece p)
+        {
+            foreach (var item in this.Pieces)
+            {
+                if (item.Equals(p))
+                    return true;
+            }
+            return false;
+        }
+
     }
 }

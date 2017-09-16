@@ -18,7 +18,7 @@ namespace Checkers.Core
 
         public Game()
         {
-            this.BlackPlayer = new BlackPlayer();
+            this.BlackPlayer = new WhitePlayer();
             this.RedPlayer = new RedPlayer();
             this.Board = new Board();
         }

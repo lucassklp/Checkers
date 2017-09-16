@@ -37,7 +37,7 @@ namespace Checkers
             this.InitializateField();
             this.UpdateTable();
 
-            this.socket = new TcpSocket("127.0.0.1", 40000);
+            this.socket = new TcpSocket(Constantes.IP, Constantes.PORT);
             socket.OnReceiveSocket += Socket_OnReceiveSocket;
             socket.StartServer();
 
@@ -57,7 +57,7 @@ namespace Checkers
             if (this.Game == null)
             {
                 this.player = new RedPlayer();
-                this.socket.Connect("127.0.0.1", 41000);
+                this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
             }
 
             this.Game = Serializer.Deserialize<Game>(data);
@@ -87,7 +87,7 @@ namespace Checkers
             this.Game = new Game();
             this.Game.PositionatePieces();
             this.player = new BlackPlayer();
-            this.socket.Connect("127.0.0.1", 41000);
+            this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);    
             this.Game.RafflePlayer();
             this.socket.Send(Serializer.Serialize(this.Game));
         }
@@ -128,9 +128,18 @@ namespace Checkers
                 if (this.PeekedPiece == null)
                 {
                     this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+                    if (!this.player.Owns(this.PeekedPiece))
+                    {
+                        MessageBox.Show("Essa peça não é sua!");
+                        this.PeekedPiece = null;
+                        return;
+                    }
                 }
                 else
                 {
+ 
+
+
                     var moviment = new Moviment(coordinate);
                     if (this.PeekedPiece.IsMovimentValid(moviment))
                     {
