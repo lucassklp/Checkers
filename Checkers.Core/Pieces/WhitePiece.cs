@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 namespace Checkers.Core.Pieces
 {
     [Serializable]
-    public class BlackPiece : Piece
+    public class WhitePiece : Piece
     {
-        public BlackPiece(int x, int y) : base(x, y)
+        public WhitePiece(int x, int y) : base(x, y)
         {
 
         }

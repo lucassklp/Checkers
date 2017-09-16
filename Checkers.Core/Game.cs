@@ -10,7 +10,7 @@ namespace Checkers.Core
     [Serializable]
     public class Game
     {
-        public Player BlackPlayer { get; set; }
+        public Player WhitePlayer { get; set; }
         public Player RedPlayer { get; set; }
 
         public Player CurrentPlayer { get; set; }
@@ -18,29 +18,29 @@ namespace Checkers.Core
 
         public Game()
         {
-            this.BlackPlayer = new WhitePlayer();
+            this.WhitePlayer = new WhitePlayer();
             this.RedPlayer = new RedPlayer();
             this.Board = new Board();
         }
 
         public void PositionatePieces()
         {
-            this.BlackPlayer.PreparePieces();
+            this.WhitePlayer.PreparePieces();
             this.RedPlayer.PreparePieces();
 
             this.Board.RedPieces = this.RedPlayer.Pieces;
-            this.Board.BlackPieces = this.BlackPlayer.Pieces;
+            this.Board.BlackPieces = this.WhitePlayer.Pieces;
         }
 
         public void RafflePlayer()
         {
             Random r = new Random();
-            this.CurrentPlayer = (r.Next(2) % 2 == 0 ? this.RedPlayer : this.BlackPlayer); 
+            this.CurrentPlayer = (r.Next(2) % 2 == 0 ? this.RedPlayer : this.WhitePlayer); 
         }
 
         public void SwapPlayers()
         {
-            this.CurrentPlayer = (this.CurrentPlayer == this.RedPlayer ? this.BlackPlayer : this.RedPlayer);
+            this.CurrentPlayer = (this.CurrentPlayer == this.RedPlayer ? this.WhitePlayer : this.RedPlayer);
         }
 
     }

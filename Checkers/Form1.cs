@@ -76,7 +76,7 @@ namespace Checkers
         private bool CheckPlayerTurn()
         {
             if (this.Game != null && this.player != null)
-                return (this.Game.CurrentPlayer is BlackPlayer && this.player is BlackPlayer ||
+                return (this.Game.CurrentPlayer is WhitePlayer && this.player is WhitePlayer ||
                         this.Game.CurrentPlayer is RedPlayer && this.player is RedPlayer);
             else return false;
         }
@@ -86,7 +86,7 @@ namespace Checkers
         {
             this.Game = new Game();
             this.Game.PositionatePieces();
-            this.player = new BlackPlayer();
+            this.player = new WhitePlayer();
             this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);    
             this.Game.RafflePlayer();
             this.socket.Send(Serializer.Serialize(this.Game));
@@ -133,7 +133,8 @@ namespace Checkers
                         MessageBox.Show("Essa peça não é sua!");
                         this.PeekedPiece = null;
                         return;
-                    }
+                    }              
+                    
                 }
                 else
                 {

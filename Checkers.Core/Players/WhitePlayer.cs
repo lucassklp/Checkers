@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Checkers.Core.Players
 {
     [Serializable]
-    public class BlackPlayer : Player
+    public class WhitePlayer : Player
     {
         public override void PreparePieces()
         {
