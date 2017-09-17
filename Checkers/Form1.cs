@@ -125,6 +125,10 @@ namespace Checkers
             if (this.CheckPlayerTurn())
             {
                 var coordinate = this.GetButtonCoordinate((Button)sender);
+
+
+                lbX.Text = this.Game.Board.RedPieces.ToString();
+                lbY.Text = this.Game.Board.WhitePieces.ToString();
                 if (this.PeekedPiece == null)
                 {
                     this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
@@ -138,10 +142,8 @@ namespace Checkers
                 }
                 else
                 {
- 
-
-
                     var moviment = new Moviment(coordinate);
+                    
                     if (this.PeekedPiece.IsMovimentValid(moviment))
                     {
                         this.PeekedPiece.Move(moviment);
@@ -170,13 +172,13 @@ namespace Checkers
 
             if (this.Game != null)
             {
-                foreach (var piece in this.Game.Board.BlackPieces)
+                foreach (var piece in this.Game.Board.WhitePieces)
                 {
                     var btn = this.Field.Find(x =>
                         this.GetButtonCoordinate(x).X == piece.X &&
                         this.GetButtonCoordinate(x).Y == piece.Y
                     );
-                    btn.Text = "Black";
+                    btn.Text = "White";
                 }
 
                 foreach (var piece in this.Game.Board.RedPieces)

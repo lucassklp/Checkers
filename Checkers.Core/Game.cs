@@ -29,7 +29,7 @@ namespace Checkers.Core
             this.RedPlayer.PreparePieces();
 
             this.Board.RedPieces = this.RedPlayer.Pieces;
-            this.Board.BlackPieces = this.WhitePlayer.Pieces;
+            this.Board.WhitePieces = this.WhitePlayer.Pieces;
         }
 
         public void RafflePlayer()
