@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,12 +19,30 @@ namespace Checkers.Core.Pieces
             this.Y = Y;
         }
 
-        public abstract Prediction Predict(Game board);
+        public bool IsMovimentValid(Board Board, Point point)
+        {
+            var prediction = this.Predict(Board);
+            return prediction.LeftPrediction.Exists(mv => mv.X == point.X && mv.Y == point.Y) ||
+                   prediction.RightPrediction.Exists(mv => mv.X == point.X && mv.Y == point.Y);
+        }
 
-        public abstract void Move(Moviment moviment);
+        public void Move(Board Board, Point moviment)
+        {
+            //Lógica para comer a peça
+            if(Math.Abs(this.X - moviment.X) == 2)
+            {
+                
+            }
 
-        public abstract bool IsMovimentValid(Moviment moviment);
+            //Efetua o movimento
+            this.X = moviment.X;
+            this.Y = moviment.Y;
+        }
+
+        public abstract Prediction Predict(Board Board);
 
         public abstract KingPiece ToKing();
+
+        public abstract bool IsEnemyPiece(Piece p);
     }
 }

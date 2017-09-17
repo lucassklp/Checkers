@@ -12,5 +12,11 @@ namespace Checkers.Core
     {
         public List<Point> LeftPrediction { get; private set; }
         public List<Point> RightPrediction { get; private set; }
+
+        public Prediction()
+        {
+            this.LeftPrediction = new List<Point>();
+            this.RightPrediction = new List<Point>();
+        }
     }
 }

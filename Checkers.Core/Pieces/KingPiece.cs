@@ -9,23 +9,19 @@ namespace Checkers.Core.Pieces
     [Serializable]
     public class KingPiece : Piece
     {
+        private Piece piece;
+
         public KingPiece(Piece p) : base(p.X, p.Y)
         {
-
+            this.piece = p;
         }
 
-        public override bool IsMovimentValid(Moviment moviment)
+        public override bool IsEnemyPiece(Piece p)
         {
-            return true;
+            return p.IsEnemyPiece(p);
         }
 
-        public override void Move(Moviment moviment)
-        {
-            this.X = moviment.Destination.X;
-            this.Y = moviment.Destination.Y;
-        }
-
-        public override Prediction Predict(Game board)
+        public override Prediction Predict(Board board)
         {
             throw new NotImplementedException();
         }

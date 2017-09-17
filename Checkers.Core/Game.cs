@@ -35,7 +35,7 @@ namespace Checkers.Core
         public void RafflePlayer()
         {
             Random r = new Random();
-            this.CurrentPlayer = (r.Next(2) % 2 == 0 ? this.RedPlayer : this.WhitePlayer); 
+            this.CurrentPlayer = this.WhitePlayer;//(r.Next(2) % 2 == 0 ? this.RedPlayer : this.WhitePlayer); 
         }
 
         public void SwapPlayers()
