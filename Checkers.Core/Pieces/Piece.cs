@@ -29,15 +29,23 @@ namespace Checkers.Core.Pieces
         public void Move(Board Board, Point moviment)
         {
             //Lógica para comer a peça
-            if(Math.Abs(this.X - moviment.X) == 2)
+            if(Math.Abs(this.X - moviment.X) >= 2)
             {
-                
+                Board.Eat(this, moviment);
             }
 
             //Efetua o movimento
             this.X = moviment.X;
             this.Y = moviment.Y;
+
+            //Checa se a peça se transformará numa dama, caso positivo, essa peça se transformará
+            if (this.TransformToKing())
+            {
+                Board.SetKing(this);
+            }
         }
+
+        public abstract bool TransformToKing();
 
         public abstract Prediction Predict(Board Board);
 

@@ -22,7 +22,7 @@ namespace Checkers
 
         private Game Game = null;
         private Player player;
-        private Piece PeekedPiece { get; set; }
+        private Piece PickedPiece { get; set; }
 
         private TcpSocket socket;
 
@@ -121,18 +121,18 @@ namespace Checkers
             {
                 var coordinate = this.GetButtonCoordinate((Button)sender);
 
-                if (this.PeekedPiece == null)
+                if (this.PickedPiece == null)
                 {
-                    this.PeekedPiece = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (!this.player.Owns(this.PeekedPiece))
+                    this.PickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+                    if (!this.player.Owns(this.PickedPiece))
                     {
                         MessageBox.Show("Essa peça não é sua!");
-                        this.PeekedPiece = null;
+                        this.PickedPiece = null;
                         return;
                     }
                     else
                     {
-                        var predictions = this.PeekedPiece.Predict(this.Game.Board);
+                        var predictions = this.PickedPiece.Predict(this.Game.Board);
                         foreach(var item in predictions.LeftPrediction)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
@@ -146,16 +146,15 @@ namespace Checkers
                             btn.BackColor = Color.Yellow;
                         }
                     }
-                    
                 }
                 else
                 {
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
                     if (clickedSlot != null)
                     {
-                        this.PeekedPiece = clickedSlot;
+                        this.PickedPiece = clickedSlot;
                         this.CleanColors();
-                        var predictions = PeekedPiece.Predict(this.Game.Board);
+                        var predictions = PickedPiece.Predict(this.Game.Board);
                         foreach (var item in predictions.LeftPrediction)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
@@ -170,10 +169,10 @@ namespace Checkers
                         }
                     }
                     
-                    if (this.PeekedPiece.IsMovimentValid(this.Game.Board, coordinate))
+                    if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                     {
-                        this.PeekedPiece.Move(this.Game.Board, coordinate);
-                        this.PeekedPiece = null;
+                        this.PickedPiece.Move(this.Game.Board, coordinate);
+                        this.PickedPiece = null;
                         this.Game.SwapPlayers();
                         this.socket.Send(Serializer.Serialize(this.Game));
                     }
@@ -204,7 +203,7 @@ namespace Checkers
             foreach (var item in this.Field)
             {
                 item.Text = "";
-                if(this.PeekedPiece == null)
+                if(this.PickedPiece == null)
                 {
                     item.BackColor = Color.Black;
                 }

@@ -52,7 +52,7 @@ namespace Checkers.Core.Pieces
 
 
             //Comer pra frente
-            if (this.X > 1)
+            if (this.X < 6)
             {
                 if (this.Y < 6) //Posição válida para comer no Y pela direita
                 {
@@ -126,6 +126,11 @@ namespace Checkers.Core.Pieces
         public override KingPiece ToKing()
         {
             return new KingPiece(this);
+        }
+
+        public override bool TransformToKing()
+        {
+            return (this.X == 7);
         }
     }
 }

@@ -122,5 +122,10 @@ namespace Checkers.Core.Pieces
         {
             return new KingPiece(this);
         }
+
+        public override bool TransformToKing()
+        {
+            return (this.X == 0);
+        }
     }
 }
