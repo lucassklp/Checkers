@@ -19,38 +19,41 @@ namespace Checkers.Core.Pieces
             this.Y = Y;
         }
 
+
+        public bool CanEat(Board board)
+        {
+            return this.Predict(board).Predictions.Exists(prediction => Math.Abs(this.X - prediction.X) > 1);
+        }
+
         public bool IsMovimentValid(Board Board, Point point)
         {
             var prediction = this.Predict(Board);
-            return prediction.LeftPrediction.Exists(mv => mv.X == point.X && mv.Y == point.Y) ||
-                   prediction.RightPrediction.Exists(mv => mv.X == point.X && mv.Y == point.Y);
+            return prediction.Predictions.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 
-        public bool Move(Board Board, Point moviment)
+        public void Move(Board Board, Point moviment)
         {
-            bool Swap = true ;
             //Lógica para comer a peça
-            if(Math.Abs(this.X - moviment.X) >= 2)
+            if(Math.Abs(this.X - moviment.X) > 1)
             {
                 Board.Eat(this, moviment);
-                Swap = false;
             }
              
             //Efetua o movimento
             this.X = moviment.X;
             this.Y = moviment.Y;
 
+            
             //Checa se a peça se transformará numa dama, caso positivo, essa peça se transformará
             if (this.TransformToKing())
             {
                 Board.SetKing(this);
             }
-            return Swap;
         }
 
         public abstract bool TransformToKing();
 
-        public abstract Prediction Predict(Board Board);
+        public abstract Prediction Predict(Board Board, bool onlyEat = false);
 
         public abstract KingPiece ToKing();
 

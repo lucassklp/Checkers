@@ -20,7 +20,7 @@ namespace Checkers.Core.Pieces
             return (!(p is WhitePiece));
         }
 
-        public override Prediction Predict(Board Board)
+        public override Prediction Predict(Board Board, bool onlyEat = false)
         {
             var predictions = new Prediction();
 
@@ -31,7 +31,7 @@ namespace Checkers.Core.Pieces
                 slot1 = Board[this.X - 1, this.Y - 1];
                 if(slot1 == null)
                 {
-                    predictions.LeftPrediction.Add(new Point(this.X - 1, this.Y - 1));
+                    predictions.Predictions.Add(new Point(this.X - 1, this.Y - 1));
                 }
             }
             
@@ -41,7 +41,7 @@ namespace Checkers.Core.Pieces
                 slot2 = Board[this.X - 1, this.Y + 1];
                 if(slot2 == null)
                 {
-                    predictions.RightPrediction.Add(new Point(this.X - 1, this.Y + 1));
+                    predictions.Predictions.Add(new Point(this.X - 1, this.Y + 1));
                 }
             }
 
@@ -58,7 +58,7 @@ namespace Checkers.Core.Pieces
                         {
                             if (Board[this.X - 2, this.Y + 2] == null)
                             {
-                                predictions.RightPrediction.Add(new Point(this.X - 2, this.Y + 2));
+                                predictions.Predictions.Add(new Point(this.X - 2, this.Y + 2));
                             }
                         }
                     }
@@ -73,7 +73,7 @@ namespace Checkers.Core.Pieces
                         {
                             if (Board[this.X - 2, this.Y - 2] == null)
                             {
-                                predictions.LeftPrediction.Add(new Point(this.X - 2, this.Y - 2));
+                                predictions.Predictions.Add(new Point(this.X - 2, this.Y - 2));
                             }
                         }
                     }
@@ -93,7 +93,7 @@ namespace Checkers.Core.Pieces
                         {
                             if (Board[this.X + 2, this.Y + 2] == null)
                             {
-                                predictions.RightPrediction.Add(new Point(this.X + 2, this.Y + 2));
+                                predictions.Predictions.Add(new Point(this.X + 2, this.Y + 2));
                             }
                         }
                     }
@@ -108,7 +108,7 @@ namespace Checkers.Core.Pieces
                         {
                             if (Board[this.X + 2, this.Y - 2] == null)
                             {
-                                predictions.LeftPrediction.Add(new Point(this.X + 2, this.Y - 2));
+                                predictions.Predictions.Add(new Point(this.X + 2, this.Y - 2));
                             }
                         }
                     }

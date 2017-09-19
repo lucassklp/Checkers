@@ -22,7 +22,7 @@ namespace Checkers.Core.Pieces
             return p.IsEnemyPiece(p);
         }
 
-        public override Prediction Predict(Board board)
+        public override Prediction Predict(Board board, bool onlyEat = false)
         {
             var predictions = new Prediction();
 
@@ -33,7 +33,7 @@ namespace Checkers.Core.Pieces
             {
                 if(board[x, y] == null)
                 {
-                    predictions.RightPrediction.Add(new Point(x, y));
+                    predictions.Predictions.Add(new Point(x, y));
                 }
             }
 
@@ -45,7 +45,7 @@ namespace Checkers.Core.Pieces
             {
                 if (board[x, y] == null)
                 {
-                    predictions.LeftPrediction.Add(new Point(x, y));
+                    predictions.Predictions.Add(new Point(x, y));
                 }
             }
 
@@ -56,7 +56,7 @@ namespace Checkers.Core.Pieces
             {
                 if (board[x, y] == null)
                 {
-                    predictions.RightPrediction.Add(new Point(x, y));
+                    predictions.Predictions.Add(new Point(x, y));
                 }
             }
 
@@ -68,7 +68,7 @@ namespace Checkers.Core.Pieces
             {
                 if (board[x, y] == null)
                 {
-                    predictions.LeftPrediction.Add(new Point(x, y));
+                    predictions.Predictions.Add(new Point(x, y));
                 }
             }
 

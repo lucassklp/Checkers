@@ -133,13 +133,13 @@ namespace Checkers
                     else
                     {
                         var predictions = this.PickedPiece.Predict(this.Game.Board);
-                        foreach(var item in predictions.LeftPrediction)
+                        foreach(var item in predictions.Predictions)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
                                                            GetButtonCoordinate(x).Y == item.Y);
                             btn.BackColor = Color.Yellow;
                         }
-                        foreach (var item in predictions.RightPrediction)
+                        foreach (var item in predictions.Predictions)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
                                                            GetButtonCoordinate(x).Y == item.Y);
@@ -156,13 +156,13 @@ namespace Checkers
                         this.PickedPiece = clickedSlot;
                         this.CleanColors();
                         var predictions = PickedPiece.Predict(this.Game.Board);
-                        foreach (var item in predictions.LeftPrediction)
+                        foreach (var item in predictions.Predictions)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
                                                            GetButtonCoordinate(x).Y == item.Y);
                             btn.BackColor = Color.Yellow;
                         }
-                        foreach (var item in predictions.RightPrediction)
+                        foreach (var item in predictions.Predictions)
                         {
                             var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
                                                            GetButtonCoordinate(x).Y == item.Y);
@@ -172,10 +172,11 @@ namespace Checkers
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                     {                        
-                       var Swap = this.PickedPiece.Move(this.Game.Board, coordinate);
-                        this.PickedPiece = null;
-                        if (Swap)
+                        this.PickedPiece.Move(this.Game.Board, coordinate);
+                        if (!this.PickedPiece.CanEat(Game.Board))
+                        {
                             this.Game.SwapPlayers();
+                        }
                         this.socket.Send(Serializer.Serialize(this.Game));
                     }
                 }
