@@ -26,14 +26,16 @@ namespace Checkers.Core.Pieces
                    prediction.RightPrediction.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 
-        public void Move(Board Board, Point moviment)
+        public bool Move(Board Board, Point moviment)
         {
+            bool Swap = true ;
             //Lógica para comer a peça
             if(Math.Abs(this.X - moviment.X) >= 2)
             {
                 Board.Eat(this, moviment);
+                Swap = false;
             }
-
+             
             //Efetua o movimento
             this.X = moviment.X;
             this.Y = moviment.Y;
@@ -43,6 +45,7 @@ namespace Checkers.Core.Pieces
             {
                 Board.SetKing(this);
             }
+            return Swap;
         }
 
         public abstract bool TransformToKing();

@@ -171,10 +171,11 @@ namespace Checkers
                     }
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
-                    {
-                        this.PickedPiece.Move(this.Game.Board, coordinate);
+                    {                        
+                       var Swap = this.PickedPiece.Move(this.Game.Board, coordinate);
                         this.PickedPiece = null;
-                        this.Game.SwapPlayers();
+                        if (Swap)
+                            this.Game.SwapPlayers();
                         this.socket.Send(Serializer.Serialize(this.Game));
                     }
                 }
