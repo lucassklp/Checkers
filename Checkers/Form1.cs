@@ -150,8 +150,9 @@ namespace Checkers
                 else
                 {
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (clickedSlot != null)
+                    if (clickedSlot != null && this.player.Owns(clickedSlot))
                     {
+
                         this.PickedPiece = clickedSlot;
                         this.CleanColors();
                         var predictions = PickedPiece.Predict(this.Game.Board);
