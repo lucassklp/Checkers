@@ -139,12 +139,7 @@ namespace Checkers
                                                            GetButtonCoordinate(x).Y == item.Y);
                             btn.BackColor = Color.Yellow;
                         }
-                        foreach (var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
+                        
                     }
                 }
                 else
@@ -152,7 +147,7 @@ namespace Checkers
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
                     if (clickedSlot != null && this.player.Owns(clickedSlot))
                     {
-
+                        
                         this.PickedPiece = clickedSlot;
                         this.CleanColors();
                         var predictions = PickedPiece.Predict(this.Game.Board);
@@ -162,12 +157,7 @@ namespace Checkers
                                                            GetButtonCoordinate(x).Y == item.Y);
                             btn.BackColor = Color.Yellow;
                         }
-                        foreach (var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
+                       
                     }
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))

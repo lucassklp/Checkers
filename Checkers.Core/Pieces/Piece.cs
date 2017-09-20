@@ -27,7 +27,8 @@ namespace Checkers.Core.Pieces
 
         public bool IsMovimentValid(Board Board, Point point)
         {
-            var prediction = this.Predict(Board);
+            
+            var prediction = this.Predict(Board, CanEat(Board));
             return prediction.Predictions.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 
