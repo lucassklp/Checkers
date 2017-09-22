@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Checkers.Socket.TCP
 {
-    public delegate void OnReceiveSocket(object sender, byte[] data);
+    public delegate void OnReceiveSocket(byte[] data);
 
     public class TcpSocket
     {

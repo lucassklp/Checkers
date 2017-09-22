@@ -29,28 +29,24 @@ namespace Checkers.Socket.TCP
             Byte[] bytes = new Byte[BUFFER_SIZE];
             NetworkStream stream = client.GetStream();
 
-
             try
             {
                 while (client.Connected)
                 {
                     Console.WriteLine("Esperando receber dados!");
                     stream.Read(bytes, 0, bytes.Length);
-                    this.Changed(this, bytes);
+                    this.Changed(bytes);
                     Console.WriteLine("Dados recebidos!");
-
-                    //Envia uma resposta.
-                    //stream.Write(bytes, 0, bytes.Length);
                 }
                 stream.Close();
                 client.Close();
             }
             catch (Exception ex)
             {
+                Console.WriteLine($"Ocorreu um erro");
                 stream.Close();
                 client.Close();
             }
         }
     }
-
 }

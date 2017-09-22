@@ -33,22 +33,22 @@
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(328, 189);
+            this.button1.Location = new System.Drawing.Point(12, 407);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.Size = new System.Drawing.Size(378, 63);
             this.button1.TabIndex = 0;
             this.button1.Text = "Inicializar Jogo";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.InitializeGame);
             // 
-            // Form1
+            // CheckersSocket
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(787, 394);
+            this.ClientSize = new System.Drawing.Size(402, 482);
             this.Controls.Add(this.button1);
-            this.Name = "Form1";
-            this.Text = "Form1";
+            this.Name = "CheckersSocket";
+            this.Text = "Jogo da Dama - Socket Mode";
             this.ResumeLayout(false);
 
         }

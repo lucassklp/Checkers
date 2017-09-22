@@ -37,9 +37,18 @@ namespace Checkers
             this.InitializateField();
             this.UpdateTable();
 
-            this.socket = new TcpSocket(Constantes.IP, Constantes.PORT);
-            socket.OnReceiveSocket += Socket_OnReceiveSocket;
-            socket.StartServer();
+            try
+            {
+                this.socket = new TcpSocket(Constantes.IP, Constantes.PORT);
+                socket.OnReceiveSocket += Socket_OnReceiveSocket;
+                socket.StartServer();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Ocorreu um erro ao inicializar o socket: {ex.Message}");
+                this.Close();
+            }
+
 
             this.TableUpdater = new Timer();
             TableUpdater.Tick += TableUpdater_Tick;
@@ -52,20 +61,28 @@ namespace Checkers
             this.UpdateTable();
         }
 
-        private void Socket_OnReceiveSocket(object sender, byte[] data)
+        private void Socket_OnReceiveSocket(byte[] data)
         {
-            //if (this.Game == null)
-            //{
-            //    this.player = new WhitePlayer();
-            //    this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
-            //}
+            try
+            {
+                //if (this.Game == null)
+                //{
+                //    this.player = new WhitePlayer();
+                //    this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
+                //}
 
-            this.Game = Serializer.Deserialize<Game>(data);
-            this.player = this.Game.CurrentPlayer;
-            //if (this.CheckPlayerTurn())
-            //{
+                this.Game = Serializer.Deserialize<Game>(data);
+                this.player = this.Game.CurrentPlayer;
+                //if (this.CheckPlayerTurn())
+                //{
                 //this.player = this.Game.CurrentPlayer;
-            //}
+                //}                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Um erro ocorreu: {ex.Message}");
+            }
+
         }
 
         private bool CheckPlayerTurn()
@@ -82,9 +99,17 @@ namespace Checkers
             this.Game = new Game();
             this.Game.PositionatePieces();
             this.player = new WhitePlayer();
-            this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);    
             this.Game.RafflePlayer();
-            this.socket.Send(Serializer.Serialize(this.Game));
+
+            try
+            {
+                this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
+                this.socket.Send(Serializer.Serialize(this.Game));
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Não foi possível enviar o socket: {ex.Message}.");
+            }
         }
 
         private void InitializateField()
