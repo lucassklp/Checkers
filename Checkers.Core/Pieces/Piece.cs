@@ -22,13 +22,18 @@ namespace Checkers.Core.Pieces
 
         public bool CanEat(Board board)
         {
-            return this.Predict(board).Predictions.Exists(prediction => Math.Abs(this.X - prediction.X) > 1);
+            var prediction = PredictToEat(board);
+            // Verifica se existe predicts para comer, caso verdadeiro, pode comer.
+            if (prediction.Predictions.Count() != 0)
+                return true;
+            else
+                return false;
         }
 
         public bool IsMovimentValid(Board Board, Point point)
         {
             
-            var prediction = this.Predict(Board, CanEat(Board));
+            var prediction = this.Predict(Board);
             return prediction.Predictions.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 
@@ -52,9 +57,21 @@ namespace Checkers.Core.Pieces
             }
         }
 
+        public Prediction GetPredictions(Board board)
+        {
+            var predictions = new Prediction();
+            if (this.CanEat(board))
+                predictions = this.PredictToEat(board);
+            else
+                predictions = this.Predict(board);
+
+            return predictions;
+        }
         public abstract bool TransformToKing();
 
-        public abstract Prediction Predict(Board Board, bool onlyEat = false);
+        public abstract Prediction Predict(Board Board);
+
+        public abstract Prediction PredictToEat(Board board);
 
         public abstract KingPiece ToKing();
 

@@ -25,9 +25,10 @@ namespace Checkers.Core.Pieces
             return true;
         }
 
-        public override Prediction Predict(Board Board, bool onlyEat = false)
+        public override Prediction Predict(Board Board)
         {
             var predictions = new Prediction();
+
 
             //Valida as peças vizinhas: (Peças de frente)
             Piece slot1 = null;
@@ -50,20 +51,26 @@ namespace Checkers.Core.Pieces
                 }
             }
 
+            return predictions;
+        }
+
+        public override Prediction PredictToEat(Board board)
+        {
+            var predictionsToEat = new Prediction();
 
             //Comer pra frente
             if (this.X < 6)
             {
                 if (this.Y < 6) //Posição válida para comer no Y pela direita
                 {
-                    var slot3 = Board[this.X + 1, this.Y + 1];
+                    var slot3 = board[this.X + 1, this.Y + 1];
                     if (slot3 != null)
                     {
                         if (this.IsEnemyPiece(slot3))
                         {
-                            if (Board[this.X + 2, this.Y + 2] == null)
+                            if (board[this.X + 2, this.Y + 2] == null)
                             {
-                                predictions.Predictions.Add(new Point(this.X + 2, this.Y + 2));
+                                predictionsToEat.Predictions.Add(new Point(this.X + 2, this.Y + 2));
                             }
                         }
                     }
@@ -71,14 +78,14 @@ namespace Checkers.Core.Pieces
 
                 if (this.Y > 1) //Posição válida para comer no Y pela esquerda
                 {
-                    var slot4 = Board[this.X + 1, this.Y - 1];
+                    var slot4 = board[this.X + 1, this.Y - 1];
                     if (slot4 != null)
                     {
                         if (this.IsEnemyPiece(slot4))
                         {
-                            if (Board[this.X + 2, this.Y - 2] == null)
+                            if (board[this.X + 2, this.Y - 2] == null)
                             {
-                                predictions.Predictions.Add(new Point(this.X + 2, this.Y - 2));
+                                predictionsToEat.Predictions.Add(new Point(this.X + 2, this.Y - 2));
                             }
                         }
                     }
@@ -91,14 +98,14 @@ namespace Checkers.Core.Pieces
             {
                 if (this.Y < 6) //Posição válida para comer no Y pela direita
                 {
-                    var slot3 = Board[this.X - 1, this.Y + 1];
+                    var slot3 = board[this.X - 1, this.Y + 1];
                     if (slot3 != null)
                     {
                         if (this.IsEnemyPiece(slot3))
                         {
-                            if (Board[this.X - 2, this.Y + 2] == null)
+                            if (board[this.X - 2, this.Y + 2] == null)
                             {
-                                predictions.Predictions.Add(new Point(this.X - 2, this.Y + 2));
+                                predictionsToEat.Predictions.Add(new Point(this.X - 2, this.Y + 2));
                             }
                         }
                     }
@@ -106,21 +113,21 @@ namespace Checkers.Core.Pieces
 
                 if (this.Y > 1) //Posição válida para comer no Y pela esquerda
                 {
-                    var slot4 = Board[this.X - 1, this.Y - 1];
+                    var slot4 = board[this.X - 1, this.Y - 1];
                     if (slot4 != null)
                     {
                         if (this.IsEnemyPiece(slot4))
                         {
-                            if (Board[this.X - 2, this.Y - 2] == null)
+                            if (board[this.X - 2, this.Y - 2] == null)
                             {
-                                predictions.Predictions.Add(new Point(this.X - 2, this.Y - 2));
+                                predictionsToEat.Predictions.Add(new Point(this.X - 2, this.Y - 2));
                             }
                         }
                     }
                 }
             }
 
-            return predictions;
+            return predictionsToEat;
         }
 
         public override KingPiece ToKing()
