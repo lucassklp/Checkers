@@ -28,7 +28,13 @@ namespace Checkers
                 return GameController.GetInstance().Game;
             }
         }
-        private Player player;
+        private Player player
+        {
+            get
+            {
+                return GameController.GetInstance().Player;
+            }
+        }
         private Piece PickedPiece { get; set; }
         private Timer TableUpdater;
 
@@ -40,20 +46,20 @@ namespace Checkers
 
             this.Field = new List<Button>();
 
-            this.InitializateField();
-            this.UpdateTable();
-
             this.TableUpdater = new Timer();
             TableUpdater.Tick += TableUpdater_Tick;
             TableUpdater.Interval = 50;
             TableUpdater.Start();
 
+            this.InitializateField();
+
+            this.remoteHandle = new RemoteHandle(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT, Constantes.PORT);
+            remoteHandle.Register<RemoteGame>("Game");
         }
 
         private void TableUpdater_Tick(object sender, EventArgs e)
         {
-            if(this.Game != null)
-                this.UpdateTable();
+            this.Tick();
         }
 
         private void InitializeGame(object sender, EventArgs e)
@@ -61,25 +67,30 @@ namespace Checkers
             //Instancia o objeto jogo
             var game = new Game();
             game.RafflePlayer();
+            game.PositionatePieces();
 
             //Inicializa no controlador de jogo
             GameController.GetInstance().Initialize(game);
             
             //Sempre quem inicializa o jogo é o White player
             GameController.GetInstance().SetWhitePlayer();
-            
-            //Efetua a conexão remota
-            remoteHandle = new RemoteHandle(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT, Constantes.PORT);
-            remoteHandle.Register<RemoteGame>("Game");
 
-            //Pega o objeto remoto
-            var remoteObj = remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+            try
+            {
+                //Pega o objeto remoto
+                var remoteObj = remoteHandle.GetRemoteObject<IRemoteGame>("Game");
 
-            //Passa o jogo atual por parâmetro
-            remoteObj.Initialize(this.Game);
+                //Passa o jogo atual por parâmetro
+                remoteObj.Initialize(this.Game);
 
-            //Seta o player remoto
-            remoteObj.SetRedPlayer();
+                //Seta o player remoto
+                remoteObj.SetRedPlayer();
+            }
+            catch(Exception ex)
+            {
+                MessageBox.Show($"Ocorreu um erro ao inicializar o jogo: {ex.Message}");
+                this.Close();
+            }
         }
 
         private void InitializateField()
@@ -99,7 +110,7 @@ namespace Checkers
                             Left = j * 50,
                             Name = string.Format("{0}x{1}", i, j),
                             BackColor = System.Drawing.Color.Black,
-                            ForeColor = System.Drawing.Color.White
+                            ForeColor = System.Drawing.Color.White,
                         };
                         button.Click += Button_Click;
                         this.Field.Add(button);
@@ -167,10 +178,17 @@ namespace Checkers
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                     {
-                        //Efetua o movimento remotamente
-                        var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
-                        remoteObj.Move(this.PickedPiece, coordinate);
-                        remoteObj.SwapPlayer();
+                        try
+                        {
+                            var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                            remoteObj.Move(this.PickedPiece, coordinate);
+                            remoteObj.SwapPlayer();
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"Ocorreu um erro ao inicializar o jogo: {ex.Message}");
+                            this.Close();
+                        }
 
                         this.PickedPiece.Move(this.Game.Board, coordinate);
                         if (!this.PickedPiece.CanEat(Game.Board))
@@ -199,8 +217,16 @@ namespace Checkers
         }
 
 
-        private void UpdateTable()
+        private void Tick()
         {
+            //Checa se há um jogo na ativa. Caso positivo, desabilita o botão
+            this.btnInitialize.Enabled = (GameController.GetInstance().Game == null);
+
+            //Atualiza o título da janela com o status do jogador
+            var myTurn = GameController.GetInstance().IsMyTurn;
+            if(!this.btnInitialize.Enabled)
+                this.Text = (myTurn ? "Sua vez de jogar" : "Vez do oponente");
+
             //Limpa o tabuleiro
             foreach (var item in this.Field)
             {

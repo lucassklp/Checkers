@@ -1,6 +1,6 @@
 ﻿namespace Checkers
 {
-    partial class Form1
+    partial class CheckersSocket
     {
         /// <summary>
         /// Required designer variable.

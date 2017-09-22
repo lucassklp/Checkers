@@ -14,18 +14,26 @@ namespace Checkers
     {
         private static GameController instance;
 
-        private Game _game;
+        private Game game;
         private Player player;
+
+        public Player Player
+        {
+            get
+            {
+                return this.player;
+            }
+        }
 
         public Game Game
         {
             get
             {
-                return this._game;
+                return this.game;
             }
             private set
             {
-                this._game = value;
+                this.game = value;
             }
         }
 

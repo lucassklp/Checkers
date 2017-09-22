@@ -15,7 +15,7 @@ using System.Windows.Forms;
 
 namespace Checkers
 {
-    public partial class Form1 : Form
+    public partial class CheckersSocket : Form
     {
 
         private List<Button> Field;
@@ -28,7 +28,7 @@ namespace Checkers
 
         private Timer TableUpdater;
 
-        public Form1()
+        public CheckersSocket()
         {
             InitializeComponent();
 
