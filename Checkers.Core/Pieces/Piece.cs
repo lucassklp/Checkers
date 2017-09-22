@@ -59,13 +59,9 @@ namespace Checkers.Core.Pieces
 
         public Prediction GetPredictions(Board board)
         {
-            var predictions = new Prediction();
-            if (this.CanEat(board))
-                predictions = this.PredictToEat(board);
-            else
-                predictions = this.Predict(board);
-
-            return predictions;
+            var allPredictions = this.Predict(board);
+            allPredictions.Predictions.AddRange(this.PredictToEat(board).Predictions);
+            return allPredictions;
         }
         public abstract bool TransformToKing();
 
