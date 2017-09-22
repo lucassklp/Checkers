@@ -28,6 +28,16 @@ namespace Checkers
 
         private Timer TableUpdater;
 
+        private Prediction Predictions
+        {
+            get
+            {
+                if (this.PickedPiece != null && this.Game != null)
+                    return this.PickedPiece.GetPredictions(this.Game.Board);
+                else return null;
+            }
+        }
+
         public CheckersSocket()
         {
             InitializeComponent();
@@ -157,13 +167,13 @@ namespace Checkers
                     }
                     else
                     {
-                        var predictions = this.PickedPiece.Predict(this.Game.Board);
-                        foreach(var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
+                        //var predictions = this.PickedPiece.Predict(this.Game.Board);
+                        //foreach(var item in predictions.Predictions)
+                        //{
+                        //    var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                        //                                   GetButtonCoordinate(x).Y == item.Y);
+                        //    btn.BackColor = Color.Yellow;
+                        //}
                         
                     }
                 }
@@ -172,17 +182,7 @@ namespace Checkers
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
                     if (clickedSlot != null && this.player.Owns(clickedSlot))
                     {
-                        
                         this.PickedPiece = clickedSlot;
-                        this.CleanColors();
-                        var predictions = PickedPiece.Predict(this.Game.Board);
-                        foreach (var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
-                       
                     }
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
@@ -193,6 +193,7 @@ namespace Checkers
                             this.Game.SwapPlayers();
                         }
                         this.socket.Send(Serializer.Serialize(this.Game));
+                        this.PickedPiece = null;
                     }
                 }
             }
@@ -205,26 +206,13 @@ namespace Checkers
             return new Point(Convert.ToInt32(coord[0]), Convert.ToInt32(coord[1]));
         }
 
-
-        private void CleanColors()
-        {
-            foreach (var item in this.Field)
-            {
-                item.BackColor = Color.Black;
-            }
-        }
-
-
         private void UpdateTable()
         {
             //Limpa o tabuleiro
             foreach (var item in this.Field)
             {
                 item.Text = "";
-                if(this.PickedPiece == null)
-                {
-                    item.BackColor = Color.Black;
-                }
+                item.BackColor = Color.Black;
             }
 
             if (this.Game != null)
@@ -248,6 +236,17 @@ namespace Checkers
                     btn.ForeColor = Color.Red;
                     btn.Text = "Red";
                 }
+
+                if (this.Predictions != null)
+                {
+                    foreach (var item in this.Predictions.Predictions)
+                    {
+                        var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                                                       GetButtonCoordinate(x).Y == item.Y);
+                        btn.BackColor = Color.Yellow;
+                    }
+                }
+
             }
         }
     }
