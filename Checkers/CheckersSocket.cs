@@ -186,9 +186,15 @@ namespace Checkers
                     }
                     
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
-                    {                        
+                    {
+                        var canEat = this.PickedPiece.CanEat(Game.Board);
                         this.PickedPiece.Move(this.Game.Board, coordinate);
-                        if (!this.PickedPiece.CanEat(Game.Board))
+                        var canEatAfter = this.PickedPiece.CanEat(Game.Board);
+
+                        if (!(canEat && canEatAfter))
+                            canEat = false;
+
+                        if (!canEat)
                         {
                             this.Game.SwapPlayers();
                         }

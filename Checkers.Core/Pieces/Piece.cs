@@ -30,10 +30,10 @@ namespace Checkers.Core.Pieces
                 return false;
         }
 
-        public bool IsMovimentValid(Board Board, Point point)
+        public bool IsMovimentValid(Board board, Point point)
         {
-            
-            var prediction = this.Predict(Board);
+
+            var prediction = this.GetPredictions(board);
             return prediction.Predictions.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 

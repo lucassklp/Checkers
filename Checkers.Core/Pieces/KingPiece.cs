@@ -136,7 +136,7 @@ namespace Checkers.Core.Pieces
                 }
             }
             //Movimento que come pra baixo/direita
-            else if (this.Y < 6 && this.X < 6)
+            if (this.Y < 6 && this.X < 6)
             {
                 if (board[this.X + 1, this.Y + 1] != null)
                 {
@@ -147,7 +147,7 @@ namespace Checkers.Core.Pieces
                             predictionsToEat.Predictions.Add(new Point(this.X + 2, this.Y + 2));
                         }
                     }
-                }
+                }             
                 else if (this.IsEnemyPiece(board[this.X + 2, this.Y + 2]))
                 {
                     if (board[this.X + 3, this.Y + 3] == null)
@@ -199,16 +199,23 @@ namespace Checkers.Core.Pieces
 
             }
             //Movimento que come pra cima/direita
-            else if (this.X > 1 && this.Y < 6)
+            if (this.X > 1 && this.Y < 6)
             {
                 if (board[this.X - 1, this.Y + 1] != null)
                 {
-                    if (this.IsEnemyPiece(board[this.X - 2, this.Y + 2]))
+                    if (this.IsEnemyPiece(board[this.X - 1, this.Y + 1]))
                     {
-                        if (board[this.X - 3, this.Y + 3] == null)
+                        if (board[this.X - 2, this.Y + 2] == null)
                         {
-                            predictionsToEat.Predictions.Add(new Point(this.X - 3, this.Y + 3));
+                            predictionsToEat.Predictions.Add(new Point(this.X - 2, this.Y + 2));
                         }
+                    }
+                }
+                else if(this.IsEnemyPiece(board[this.X - 2, this.Y + 2]))
+                {
+                    if(board[this.X-3,this.Y+3] == null)
+                    {
+                        predictionsToEat.Predictions.Add(new Point(this.X - 3, this.Y + 3));
                     }
                 }
                 else if (board[this.X - 2, this.Y + 2] == null)
@@ -244,16 +251,23 @@ namespace Checkers.Core.Pieces
 
             }
             //Movimento que come pra cima/esquerda
-            else if (this.Y > 1 && this.X > 1)
+            if (this.Y > 1 && this.X > 1)
             {
                 if (board[this.X - 1, this.Y - 1] != null)
                 {
-                    if (this.IsEnemyPiece(board[this.X - 2, this.Y - 2]))
+                    if (this.IsEnemyPiece(board[this.X - 1, this.Y - 1]))
                     {
-                        if (board[this.X - 3, this.Y - 3] == null)
+                        if (board[this.X - 2, this.Y - 2] == null)
                         {
-                            predictionsToEat.Predictions.Add(new Point(this.X - 3, this.Y - 3));
+                            predictionsToEat.Predictions.Add(new Point(this.X - 2, this.Y - 2));
                         }
+                    }
+                }
+                else if(this.IsEnemyPiece(board[this.X-2,this.Y-2]))
+                {
+                    if(board[this.X - 3, this.Y - 3] == null)
+                    {
+                        predictionsToEat.Predictions.Add(new Point(this.X - 3, this.Y - 3));
                     }
                 }
                 else if (board[this.X - 2, this.Y - 2] == null)
