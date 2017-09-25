@@ -248,11 +248,14 @@ namespace Checkers
 
                 if (this.Predictions != null)
                 {
-                    foreach (var item in this.Predictions.Predictions)
+                    if (this.player.Owns(this.PickedPiece))
                     {
-                        var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                       GetButtonCoordinate(x).Y == item.Y);
-                        btn.BackColor = Color.Yellow;
+                        foreach (var item in this.Predictions.Predictions)
+                        {
+                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                                                           GetButtonCoordinate(x).Y == item.Y);
+                            btn.BackColor = Color.Yellow;
+                        }
                     }
                 }
 

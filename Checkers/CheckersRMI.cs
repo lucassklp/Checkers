@@ -35,6 +35,24 @@ namespace Checkers
                 return GameController.GetInstance().Player;
             }
         }
+
+        private Prediction Predictions
+        {
+            get
+            {
+                if (this.PickedPiece != null && this.Game != null)
+                {
+                    if(this.Eaten)
+                        return this.PickedPiece.PredictToEat(this.Game.Board);
+                    else
+                        return this.PickedPiece.GetPredictions(this.Game.Board);
+                }
+                else return null;
+            }
+        }
+
+        private bool Eaten { get; set; } = false;
+
         private Piece PickedPiece { get; set; }
         private Timer TableUpdater;
 
@@ -93,6 +111,8 @@ namespace Checkers
             }
         }
 
+
+
         private void InitializateField()
         {
             //Posiciona os botões
@@ -129,77 +149,102 @@ namespace Checkers
 
                 if (this.PickedPiece == null)
                 {
-                    this.PickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (!this.player.Owns(this.PickedPiece))
+                    var pickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+                    if (!this.player.Owns(pickedPiece))
                     {
                         MessageBox.Show("Essa peça não é sua!");
-                        this.PickedPiece = null;
                         return;
                     }
                     else
                     {
-                        var predictions = this.PickedPiece.Predict(this.Game.Board);
-                        foreach(var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
-                        foreach (var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
+                        this.PickedPiece = pickedPiece;
                     }
                 }
-                else
+                else //Se tiver uma peça pickada;
                 {
-                    var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (clickedSlot != null && this.player.Owns(clickedSlot))
+                    if (this.Eaten)
                     {
-
-                        this.PickedPiece = clickedSlot;
-                        this.CleanColors();
-                        var predictions = PickedPiece.Predict(this.Game.Board);
-                        foreach (var item in predictions.Predictions)
+                        var validMoviment = this.PickedPiece.PredictToEat(this.Game.Board).Predictions.Exists(prediction => prediction.X == coordinate.X && prediction.Y == coordinate.Y);
+                        if (validMoviment)
                         {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
-                        }
-                        foreach (var item in predictions.Predictions)
-                        {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
+                            try
+                            {
+                                var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                                remoteObj.Move(this.PickedPiece, coordinate);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
+                                this.Close();
+                            }
+                            var canEat = this.PickedPiece.CanEat(this.Game.Board);
+                            this.PickedPiece.Move(this.Game.Board, coordinate);
+                            if(canEat)
+                                this.ResolveEaten();
+                            else
+                            {
+                                this.SwapPlayer();
+                            }
                         }
                     }
-                    
-                    if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
+                    else
                     {
-                        try
+                        if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                         {
-                            var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
-                            remoteObj.Move(this.PickedPiece, coordinate);
-                            remoteObj.SwapPlayer();
-                        }
-                        catch (Exception ex)
-                        {
-                            MessageBox.Show($"Ocorreu um erro ao inicializar o jogo: {ex.Message}");
-                            this.Close();
-                        }
+                            try
+                            {
+                                var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                                remoteObj.Move(this.PickedPiece, coordinate);
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
+                                this.Close();
+                            }
 
-                        this.PickedPiece.Move(this.Game.Board, coordinate);
-                        if (!this.PickedPiece.CanEat(Game.Board))
-                        {
-                            this.Game.SwapPlayers();
+                            var canEat = this.PickedPiece.CanEat(this.Game.Board);
+                            this.PickedPiece.Move(this.Game.Board, coordinate);
+                            if (canEat)
+                                this.ResolveEaten();
+                            else
+                            {
+                                this.SwapPlayer();
+                            }
                         }
                     }
                 }
             }
         }
 
+
+        public void SwapPlayer()
+        {
+            this.Game.SwapPlayers();
+            try
+            {
+                var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                remoteObj.SwapPlayer();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
+                this.Close();
+            }
+            this.Eaten = false;
+            this.PickedPiece = null;
+        }
+
+        public void ResolveEaten()
+        {
+            if (!this.PickedPiece.CanEat(Game.Board))
+            {
+                this.SwapPlayer();
+            }
+            else
+            {
+                this.Eaten = true;
+            }
+        }
 
         private Point GetButtonCoordinate(Button btn)
         {
@@ -231,10 +276,7 @@ namespace Checkers
             foreach (var item in this.Field)
             {
                 item.Text = "";
-                if(this.PickedPiece == null)
-                {
-                    item.BackColor = Color.Black;
-                }
+                item.BackColor = Color.Black;
             }
 
             if (this.Game != null)
@@ -259,6 +301,17 @@ namespace Checkers
                     btn.Text = "Red";
                 }
             }
+
+            if (this.Predictions != null)
+            {
+                foreach (var item in this.Predictions.Predictions)
+                {
+                    var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                                                   GetButtonCoordinate(x).Y == item.Y);
+                    btn.BackColor = Color.Yellow;
+                }
+            }
+
         }
     }
 }
