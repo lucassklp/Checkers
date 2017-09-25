@@ -162,53 +162,63 @@ namespace Checkers
                 }
                 else //Se tiver uma peça pickada;
                 {
-                    if (this.Eaten)
+
+                    //Se clicou em outra peça, o usuário quer trocar a peça selecionada
+                    var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
+                    if (clickedSlot != null)
                     {
-                        var validMoviment = this.PickedPiece.PredictToEat(this.Game.Board).Predictions.Exists(prediction => prediction.X == coordinate.X && prediction.Y == coordinate.Y);
-                        if (validMoviment)
+                        this.PickedPiece = clickedSlot; //Efetua a troca
+                    }
+                    else //vai efetuar alguma jogada (movimento)
+                    {
+                        if (this.Eaten)
                         {
-                            try
+                            var validMoviment = this.PickedPiece.PredictToEat(this.Game.Board).Predictions.Exists(prediction => prediction.X == coordinate.X && prediction.Y == coordinate.Y);
+                            if (validMoviment)
                             {
-                                var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
-                                remoteObj.Move(this.PickedPiece, coordinate);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
-                                this.Close();
-                            }
-                            var canEat = this.PickedPiece.CanEat(this.Game.Board);
-                            this.PickedPiece.Move(this.Game.Board, coordinate);
-                            if(canEat)
-                                this.ResolveEaten();
-                            else
-                            {
-                                this.SwapPlayer();
+                                try
+                                {
+                                    var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                                    remoteObj.Move(this.PickedPiece, coordinate);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
+                                    this.Close();
+                                }
+                                var canEat = this.PickedPiece.CanEat(this.Game.Board);
+                                this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (canEat)
+                                    this.ResolveEaten();
+                                else
+                                {
+                                    this.SwapPlayer();
+                                }
                             }
                         }
-                    }
-                    else
-                    {
-                        if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
+                        else
                         {
-                            try
+                            if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                             {
-                                var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
-                                remoteObj.Move(this.PickedPiece, coordinate);
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
-                                this.Close();
-                            }
+                                try
+                                {
+                                    var remoteObj = this.remoteHandle.GetRemoteObject<IRemoteGame>("Game");
+                                    remoteObj.Move(this.PickedPiece, coordinate);
+                                }
+                                catch (Exception ex)
+                                {
+                                    MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
+                                    this.Close();
+                                }
 
-                            var canEat = this.PickedPiece.CanEat(this.Game.Board);
-                            this.PickedPiece.Move(this.Game.Board, coordinate);
-                            if (canEat)
-                                this.ResolveEaten();
-                            else
-                            {
-                                this.SwapPlayer();
+                                var canEat = this.PickedPiece.CanEat(this.Game.Board);
+                                this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (canEat)
+                                    this.ResolveEaten();
+                                else
+                                {
+                                    this.SwapPlayer();
+                                }
                             }
                         }
                     }
