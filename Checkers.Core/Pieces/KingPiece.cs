@@ -21,7 +21,7 @@ namespace Checkers.Core.Pieces
         {
             if (p == null)
                 return false;
-            return p.IsEnemyPiece(p);
+            return this.piece.IsEnemyPiece(p);
         }
 
         public override Prediction Predict(Board board)

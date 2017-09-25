@@ -184,10 +184,11 @@ namespace Checkers
                     {
                         this.PickedPiece = clickedSlot;
                     }
-                    
+
+                    var canEat = this.PickedPiece.CanEat(Game.Board);
                     if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
                     {
-                        var canEat = this.PickedPiece.CanEat(Game.Board);
+                        
                         this.PickedPiece.Move(this.Game.Board, coordinate);
                         var canEatAfter = this.PickedPiece.CanEat(Game.Board);
 
@@ -201,6 +202,8 @@ namespace Checkers
                         this.socket.Send(Serializer.Serialize(this.Game));
                         this.PickedPiece = null;
                     }
+                    
+                        
                 }
             }
         }
