@@ -25,10 +25,9 @@ namespace Checkers.Core
         }
 
 
-        public void Eat(Piece movimentingPiece, Point destination)
+        public bool Eat(Piece movimentingPiece, Point destination)
         {
-            //Come todo mundo q aparecer no caminho
-
+            var eaten = false;
 
             //A peça está se movimentando para cima
             if(destination.X < movimentingPiece.X)
@@ -44,6 +43,7 @@ namespace Checkers.Core
                         {
                             var eatenPiece = this[x, y];
                             this.EatPiece(eatenPiece);
+                            eaten = true;
                         }
                     }
                 }
@@ -57,6 +57,7 @@ namespace Checkers.Core
                         {
                             var eatenPiece = this[x, y];
                             this.EatPiece(eatenPiece);
+                            eaten = true;
                         }
                     }
                 }
@@ -74,6 +75,7 @@ namespace Checkers.Core
                         {
                             var eatenPiece = this[x, y];
                             this.EatPiece(eatenPiece);
+                            eaten = true;
                         }
                     }
                 }
@@ -87,10 +89,13 @@ namespace Checkers.Core
                         {
                             var eatenPiece = this[x, y];
                             this.EatPiece(eatenPiece);
+                            eaten = true;
                         }
                     }
                 }
             }
+
+            return eaten;
         }
 
 

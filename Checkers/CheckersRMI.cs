@@ -186,9 +186,9 @@ namespace Checkers
                                     MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
                                     this.Close();
                                 }
-                                var canEat = this.PickedPiece.CanEat(this.Game.Board);
-                                this.PickedPiece.Move(this.Game.Board, coordinate);
-                                if (canEat)
+                                
+                                var eaten = this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (eaten)
                                     this.ResolveEaten();
                                 else
                                 {
@@ -210,10 +210,9 @@ namespace Checkers
                                     MessageBox.Show($"Ocorreu um erro no jogo: {ex.Message}");
                                     this.Close();
                                 }
-
-                                var canEat = this.PickedPiece.CanEat(this.Game.Board);
-                                this.PickedPiece.Move(this.Game.Board, coordinate);
-                                if (canEat)
+                                
+                                var eaten = this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (eaten)
                                     this.ResolveEaten();
                                 else
                                 {
@@ -289,37 +288,46 @@ namespace Checkers
                 item.BackColor = Color.Black;
             }
 
-            if (this.Game != null)
+            try
             {
-                foreach (var piece in this.Game.Board.WhitePieces)
+
+                if (this.Game != null)
                 {
-                    var btn = this.Field.Find(x =>
-                        this.GetButtonCoordinate(x).X == piece.X &&
-                        this.GetButtonCoordinate(x).Y == piece.Y
-                    );
-                    btn.ForeColor = Color.White;
-                    btn.Text = "White";
+                    foreach (var piece in this.Game.Board.WhitePieces)
+                    {
+                        var btn = this.Field.Find(x =>
+                            this.GetButtonCoordinate(x).X == piece.X &&
+                            this.GetButtonCoordinate(x).Y == piece.Y
+                        );
+                        btn.ForeColor = Color.White;
+                        btn.Text = "White";
+                    }
+
+                    foreach (var piece in this.Game.Board.RedPieces)
+                    {
+                        var btn = this.Field.Find(x =>
+                            this.GetButtonCoordinate(x).X == piece.X &&
+                            this.GetButtonCoordinate(x).Y == piece.Y
+                        );
+                        btn.ForeColor = Color.Red;
+                        btn.Text = "Red";
+                    }
                 }
 
-                foreach (var piece in this.Game.Board.RedPieces)
+                if (this.Predictions != null)
                 {
-                    var btn = this.Field.Find(x =>
-                        this.GetButtonCoordinate(x).X == piece.X &&
-                        this.GetButtonCoordinate(x).Y == piece.Y
-                    );
-                    btn.ForeColor = Color.Red;
-                    btn.Text = "Red";
+                    foreach (var item in this.Predictions.Predictions)
+                    {
+                        var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                                                       GetButtonCoordinate(x).Y == item.Y);
+                        btn.BackColor = Color.Yellow;
+                    }
                 }
+
             }
-
-            if (this.Predictions != null)
+            catch(Exception ex)
             {
-                foreach (var item in this.Predictions.Predictions)
-                {
-                    var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                   GetButtonCoordinate(x).Y == item.Y);
-                    btn.BackColor = Color.Yellow;
-                }
+                Console.WriteLine(ex.Message);
             }
 
         }

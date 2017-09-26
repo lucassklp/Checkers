@@ -29,48 +29,80 @@ namespace Checkers.Core.Pieces
             var predictions = new Prediction();
 
             //Movimento que vai para baixo/direita
-            int y = this.Y;
-            int x = this.X;
+            int y = this.Y + 1;
+            int x = this.X + 1;
             for (; x < 8 && y < 8; x++, y++)
             {
                 if(board[x, y] == null)
                 {
                     predictions.Predictions.Add(new Point(x, y));
                 }
+                else
+                {
+                    //Following
+                    if(board[x + 1, y + 1] != null)
+                    {
+                        break;
+                    }
+                }
             }
 
 
             //Movimento que vai para baixo/esquerda 
-            y = this.Y;
-            x = this.X;
+            y = this.Y - 1;
+            x = this.X + 1;
             for (; x < 8 && y >= 0; x++, y--)
             {
                 if (board[x, y] == null)
                 {
                     predictions.Predictions.Add(new Point(x, y));
                 }
+                else
+                {
+                    //Following
+                    if (board[x + 1, y - 1] != null)
+                    {
+                        break;
+                    }
+                }
             }
 
             //Movimento que vai para cima/direita
-            y = this.Y;
-            x = this.X;
+            y = this.Y + 1;
+            x = this.X - 1;
             for (; x >= 0 && y < 8; x--, y++)
             {
                 if (board[x, y] == null)
                 {
                     predictions.Predictions.Add(new Point(x, y));
                 }
+                else
+                {
+                    //Following
+                    if (board[x - 1, y + 1] != null)
+                    {
+                        break;
+                    }
+                }
             }
 
 
             //Movimento que vai para cima/esquerda 
-            y = this.Y;
-            x = this.X;
+            y = this.Y - 1;
+            x = this.X - 1;
             for (; x >= 0 && y >= 0; x--, y--)
             {
                 if (board[x, y] == null)
                 {
                     predictions.Predictions.Add(new Point(x, y));
+                }
+                else
+                {
+                    //Following
+                    if (board[x - 1, y - 1] != null)
+                    {
+                        break;
+                    }
                 }
             }
 

@@ -36,12 +36,21 @@ namespace Checkers.Core.Pieces
             return prediction.Predictions.Exists(mv => mv.X == point.X && mv.Y == point.Y);
         }
 
-        public void Move(Board Board, Point moviment)
+
+        /// <summary>
+        /// Move a piece on the board
+        /// </summary>
+        /// <param name="Board">O tabuleiro</param>
+        /// <param name="moviment">O movimento que essa peça fará</param>
+        /// <returns>Se a peça comeu</returns>
+        public bool Move(Board Board, Point moviment)
         {
+            bool eaten = false;
+
             //Lógica para comer a peça
             if(Math.Abs(this.X - moviment.X) > 1)
             {
-                Board.Eat(this, moviment);
+                eaten = Board.Eat(this, moviment);
             }
              
             //Efetua o movimento
@@ -54,6 +63,8 @@ namespace Checkers.Core.Pieces
             {
                 Board.SetKing(this);
             }
+
+            return eaten;
         }
 
         public Prediction GetPredictions(Board board)
