@@ -150,6 +150,7 @@ namespace Checkers
                 if (this.PickedPiece == null)
                 {
                     var pickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+
                     if (!this.player.Owns(pickedPiece))
                     {
                         MessageBox.Show("Essa peça não é sua!");
@@ -165,7 +166,7 @@ namespace Checkers
 
                     //Se clicou em outra peça, o usuário quer trocar a peça selecionada
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (clickedSlot != null)
+                    if (clickedSlot != null && this.player.Owns(clickedSlot))
                     {
                         this.PickedPiece = clickedSlot; //Efetua a troca
                     }
@@ -290,7 +291,6 @@ namespace Checkers
 
             try
             {
-
                 if (this.Game != null)
                 {
                     foreach (var piece in this.Game.Board.WhitePieces)

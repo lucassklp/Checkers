@@ -33,10 +33,17 @@ namespace Checkers
             get
             {
                 if (this.PickedPiece != null && this.Game != null)
-                    return this.PickedPiece.GetPredictions(this.Game.Board);
+                {
+                    if (this.Eaten)
+                        return this.PickedPiece.PredictToEat(this.Game.Board);
+                    else
+                        return this.PickedPiece.GetPredictions(this.Game.Board);
+                }
                 else return null;
             }
         }
+
+        private bool Eaten { get; set; } = false;
 
         public CheckersSocket()
         {
@@ -45,7 +52,7 @@ namespace Checkers
             this.Field = new List<Button>();
 
             this.InitializateField();
-            this.UpdateTable();
+            this.Tick();
 
             try
             {
@@ -68,25 +75,26 @@ namespace Checkers
 
         private void TableUpdater_Tick(object sender, EventArgs e)
         {
-            this.UpdateTable();
+            this.Tick();
         }
 
         private void Socket_OnReceiveSocket(byte[] data)
         {
             try
             {
-                //if (this.Game == null)
-                //{
-                //    this.player = new WhitePlayer();
-                //    this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
-                //}
+                var game = Serializer.Deserialize<Game>(data);
+                if (this.Game == null)
+                {
+                    this.player = game.RedPlayer;
+                    this.socket.Connect(Constantes.CONNECTING_IP, Constantes.CONNECTING_PORT);
+                }
 
-                this.Game = Serializer.Deserialize<Game>(data);
-                this.player = this.Game.CurrentPlayer;
-                //if (this.CheckPlayerTurn())
-                //{
-                //this.player = this.Game.CurrentPlayer;
-                //}                
+                this.Game = game;
+
+                if (this.CheckPlayerTurn())
+                {
+                    this.player = this.Game.CurrentPlayer;
+                }
             }
             catch (Exception ex)
             {
@@ -108,7 +116,7 @@ namespace Checkers
         {
             this.Game = new Game();
             this.Game.PositionatePieces();
-            this.player = new WhitePlayer();
+            this.player = Game.WhitePlayer;
             this.Game.RafflePlayer();
 
             try
@@ -158,53 +166,75 @@ namespace Checkers
 
                 if (this.PickedPiece == null)
                 {
-                    this.PickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
-                    if (!this.player.Owns(this.PickedPiece))
+                    var pickedPiece = this.Game.Board[coordinate.X, coordinate.Y];
+                    if (!this.player.Owns(pickedPiece))
                     {
                         MessageBox.Show("Essa peça não é sua!");
-                        this.PickedPiece = null;
                         return;
                     }
                     else
                     {
-                        //var predictions = this.PickedPiece.Predict(this.Game.Board);
-                        //foreach(var item in predictions.Predictions)
-                        //{
-                        //    var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                        //                                   GetButtonCoordinate(x).Y == item.Y);
-                        //    btn.BackColor = Color.Yellow;
-                        //}
-                        
+                        this.PickedPiece = pickedPiece;
                     }
                 }
-                else
+                else //Se tiver uma peça pickada;
                 {
+                    //Se clicou em outra peça, o usuário quer trocar a peça selecionada
                     var clickedSlot = this.Game.Board[coordinate.X, coordinate.Y];
                     if (clickedSlot != null && this.player.Owns(clickedSlot))
                     {
                         this.PickedPiece = clickedSlot;
                     }
-
-                    var canEat = this.PickedPiece.CanEat(Game.Board);
-                    if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
+                    else //vai efetuar alguma jogada (movimento)
                     {
-                        
-                        this.PickedPiece.Move(this.Game.Board, coordinate);
-                        var canEatAfter = this.PickedPiece.CanEat(Game.Board);
-
-                        if (!(canEat && canEatAfter))
-                            canEat = false;
-
-                        if (!canEat)
+                        if (this.Eaten)
                         {
-                            this.Game.SwapPlayers();
+                            var validMoviment = this.PickedPiece.PredictToEat(this.Game.Board).Predictions.Exists(prediction => prediction.X == coordinate.X && prediction.Y == coordinate.Y);
+                            if (validMoviment)
+                            {
+                                var eaten = this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (eaten)
+                                    this.ResolveEaten();
+                                else
+                                {
+                                    this.Game.SwapPlayers();
+                                    this.Eaten = false;
+                                }
+                            }
                         }
-                        this.socket.Send(Serializer.Serialize(this.Game));
+                        else
+                        {
+                            if (this.PickedPiece.IsMovimentValid(this.Game.Board, coordinate))
+                            {
+                                var eaten = this.PickedPiece.Move(this.Game.Board, coordinate);
+                                if (eaten)
+                                    this.ResolveEaten();
+                                else
+                                {
+                                    this.Game.SwapPlayers();
+                                    this.Eaten = false;
+                                }
+                            }
+                        }
+
                         this.PickedPiece = null;
+                        this.socket.Send(Serializer.Serialize(this.Game));
                     }
-                    
-                        
                 }
+            }
+        }
+
+
+        public void ResolveEaten()
+        {
+            if (!this.PickedPiece.CanEat(Game.Board))
+            {
+                this.Game.SwapPlayers();
+                this.Eaten = false;
+            }
+            else
+            {
+                this.Eaten = true;
             }
         }
 
@@ -215,8 +245,17 @@ namespace Checkers
             return new Point(Convert.ToInt32(coord[0]), Convert.ToInt32(coord[1]));
         }
 
-        private void UpdateTable()
+        private void Tick()
         {
+
+            //Checa se há um jogo na ativa. Caso positivo, desabilita o botão
+            this.btnInitialize.Enabled = (Game == null);
+
+            //Atualiza o título da janela com o status do jogador
+            var myTurn = this.CheckPlayerTurn();
+            if (!this.btnInitialize.Enabled)
+                this.Text = (myTurn ? "Sua vez de jogar" : "Vez do oponente");
+
             //Limpa o tabuleiro
             foreach (var item in this.Field)
             {
@@ -224,42 +263,50 @@ namespace Checkers
                 item.BackColor = Color.Black;
             }
 
-            if (this.Game != null)
+            try
             {
-                foreach (var piece in this.Game.Board.WhitePieces)
+                if (this.Game != null)
                 {
-                    var btn = this.Field.Find(x =>
-                        this.GetButtonCoordinate(x).X == piece.X &&
-                        this.GetButtonCoordinate(x).Y == piece.Y
-                    );
-                    btn.ForeColor = Color.White;
-                    btn.Text = "White";
-                }
-
-                foreach (var piece in this.Game.Board.RedPieces)
-                {
-                    var btn = this.Field.Find(x =>
-                        this.GetButtonCoordinate(x).X == piece.X &&
-                        this.GetButtonCoordinate(x).Y == piece.Y
-                    );
-                    btn.ForeColor = Color.Red;
-                    btn.Text = "Red";
-                }
-
-                if (this.Predictions != null)
-                {
-                    if (this.player.Owns(this.PickedPiece))
+                    foreach (var piece in this.Game.Board.WhitePieces)
                     {
-                        foreach (var item in this.Predictions.Predictions)
+                        var btn = this.Field.Find(x =>
+                            this.GetButtonCoordinate(x).X == piece.X &&
+                            this.GetButtonCoordinate(x).Y == piece.Y
+                        );
+                        btn.ForeColor = Color.White;
+                        btn.Text = "White";
+                    }
+
+                    foreach (var piece in this.Game.Board.RedPieces)
+                    {
+                        var btn = this.Field.Find(x =>
+                            this.GetButtonCoordinate(x).X == piece.X &&
+                            this.GetButtonCoordinate(x).Y == piece.Y
+                        );
+                        btn.ForeColor = Color.Red;
+                        btn.Text = "Red";
+                    }
+
+                    if (this.Predictions != null)
+                    {
+                        if (this.player.Owns(this.PickedPiece))
                         {
-                            var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
-                                                           GetButtonCoordinate(x).Y == item.Y);
-                            btn.BackColor = Color.Yellow;
+                            foreach (var item in this.Predictions.Predictions)
+                            {
+                                var btn = this.Field.Find(x => GetButtonCoordinate(x).X == item.X &&
+                                                               GetButtonCoordinate(x).Y == item.Y);
+                                btn.BackColor = Color.Yellow;
+                            }
                         }
                     }
-                }
 
+                }
             }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
         }
     }
 }

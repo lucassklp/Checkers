@@ -28,25 +28,25 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.button1 = new System.Windows.Forms.Button();
+            this.btnInitialize = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // button1
+            // btnInitialize
             // 
-            this.button1.Location = new System.Drawing.Point(12, 407);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(378, 63);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "Inicializar Jogo";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.InitializeGame);
+            this.btnInitialize.Location = new System.Drawing.Point(12, 407);
+            this.btnInitialize.Name = "btnInitialize";
+            this.btnInitialize.Size = new System.Drawing.Size(378, 63);
+            this.btnInitialize.TabIndex = 0;
+            this.btnInitialize.Text = "Inicializar Jogo";
+            this.btnInitialize.UseVisualStyleBackColor = true;
+            this.btnInitialize.Click += new System.EventHandler(this.InitializeGame);
             // 
             // CheckersSocket
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(402, 482);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.btnInitialize);
             this.Name = "CheckersSocket";
             this.Text = "Jogo da Dama - Socket Mode";
             this.ResumeLayout(false);
@@ -55,7 +55,7 @@
 
         #endregion
 
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button btnInitialize;
     }
 }
 
